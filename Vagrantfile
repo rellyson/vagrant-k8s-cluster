@@ -26,17 +26,19 @@ Vagrant.configure("2") do |config|
       v.cpus = 2
     end
     cp.vm.network "forwarded_port", guest: 10250, host: 10250
+    cp.vm.synced_folder "./shared/", "/home/vagrant/config/"
     cp.vm.provision "shell", path: "./scripts/shared_setup.sh"
     cp.vm.provision "shell", path: "./scripts/cplane_setup.sh"
   end
  
   (1..NUM_NODES).each do |i|
     config.vm.define "node_0#{i}" do |node|
-      node.vm.hostname = "worker-node0#{i}"
+      node.vm.hostname = "node0#{i}"
       node.vm.network "private_network", ip: NETWORK_IP_PREFIX + "#{NETWORK_IP_SUFIX + i}"
       node.vm.provider "virtualbox" do |vb|
           vb.cpus = 1
       end
+      node.vm.synced_folder "./shared/", "/home/vagrant/config/"
       node.vm.provision "shell", path: "./scripts/shared_setup.sh"
       node.vm.provision "shell", path: "./scripts/nodes_setup.sh"
     end
